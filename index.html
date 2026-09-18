@@ -5,47 +5,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FTRNet</title>
+    <title>FTRNet: Horizon-Specific Range-View LiDAR Forecasting with Cross-Origin Refinement</title>
 
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
             margin: 0;
             background: #ffffff;
-            color: #222222;
+            color: #222;
         }
 
         .container {
             max-width: 1050px;
             margin: 0 auto;
-            padding: 60px 24px;
+            padding: 55px 24px 80px;
         }
 
         h1 {
             text-align: center;
             font-size: 42px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .subtitle {
             text-align: center;
             font-size: 23px;
-            font-weight: 500;
-            margin-bottom: 15px;
+            line-height: 1.4;
+            margin-bottom: 18px;
         }
 
-        .venue {
+        .authors {
             text-align: center;
-            font-size: 18px;
-            color: #555;
-            margin-bottom: 40px;
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .affiliation {
+            text-align: center;
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .links {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .links a {
+            display: inline-block;
+            margin: 5px 6px;
+            padding: 9px 16px;
+            border-radius: 6px;
+            background: #222;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
         }
 
         h2 {
-            margin-top: 55px;
             font-size: 28px;
-            border-bottom: 1px solid #ddd;
+            margin-top: 55px;
             padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
         }
 
         p {
@@ -53,23 +75,49 @@
             line-height: 1.7;
         }
 
-        .placeholder {
+        .figure {
             width: 100%;
-            height: 260px;
-            background: #f5f5f5;
-            border: 1px dashed #aaa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #777;
+            margin: 22px 0 12px;
+        }
+
+        .figure img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .caption {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
+            font-size: 15px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        .best {
+            font-weight: bold;
         }
 
         footer {
             text-align: center;
+            color: #888;
             margin-top: 70px;
-            padding: 25px;
-            color: #777;
             font-size: 14px;
         }
     </style>
@@ -85,53 +133,152 @@
         Horizon-Specific Range-View LiDAR Forecasting with Cross-Origin Refinement
     </div>
 
-    <div class="venue">
-        ICASSP 2027
+    <div class="authors">
+        Lanxin Kou, Nan Wang, Junnan Sun， Ying Wang
+    </div>
+
+    <div class="affiliation">
+        College of Computer Science and Technology, Jilin University
+    </div>
+
+    <div class="links">
+        <a href="#">Paper</a>
+        <a href="https://github.com/LXKou/FTRNet">GitHub</a>
     </div>
 
 
     <h2>Overview</h2>
 
     <p>
-        FTRNet is a range-view LiDAR future point cloud forecasting framework
-        that constructs horizon-specific future representations and exploits
-        cross-origin overlapping predictions for refinement.
+        FTRNet revisits range-view LiDAR point cloud prediction from the perspective
+        of temporal relationships among future predictions. It explicitly constructs
+        horizon-specific future representations and exploits overlapping predictions
+        from adjacent forecast origins for selective refinement.
     </p>
 
 
     <h2>Qualitative Results</h2>
 
-    <div class="placeholder">
-        Qualitative comparison will be placed here
+    <div class="figure">
+        <img src="assets/images/comparison.pdf" alt="Qualitative comparison">
+        <div class="caption">
+            Qualitative comparison on KITTI Odometry at T+1 and T+5.
+        </div>
     </div>
 
 
     <h2>Method</h2>
 
-    <div class="placeholder">
-        FTRNet architecture will be placed here
+    <div class="figure">
+        <img src="assets/images/frame_v2.pdf" alt="FTRNet architecture">
+        <div class="caption">
+            Overview of the FTRNet architecture.
+        </div>
     </div>
 
-
-    <h2>Results</h2>
-
     <p>
-        Quantitative results on KITTI Odometry and nuScenes will be provided here.
+        FTRNet first models historical temporal context from past range views.
+        Current geometry is combined with learnable horizon embeddings to construct
+        horizon-conditioned future representations before decoding.
+        CFSR further uses cross-origin overlapping predictions during training
+        for selective refinement.
     </p>
+
+
+    <h2>Quantitative Results</h2>
+
+    <h3>KITTI Odometry</h3>
+
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Mean Range Loss</th>
+            <th>Mean CD</th>
+        </tr>
+        <tr>
+            <td>TCNet</td>
+            <td>0.771</td>
+            <td>0.387</td>
+        </tr>
+        <tr>
+            <td>PCPNet-Sem.</td>
+            <td>0.719</td>
+            <td>0.365</td>
+        </tr>
+        <tr>
+            <td>ATPPNet</td>
+            <td>0.663</td>
+            <td>0.335</td>
+        </tr>
+        <tr>
+            <td>PCPMamba</td>
+            <td>0.615</td>
+            <td>0.298</td>
+        </tr>
+        <tr>
+            <td><strong>FTRNet</strong></td>
+            <td class="best">0.567</td>
+            <td class="best">0.255</td>
+        </tr>
+    </table>
+
+
+    <h3>nuScenes</h3>
+
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Mean Range Loss</th>
+            <th>Mean CD</th>
+        </tr>
+        <tr>
+            <td>TCNet</td>
+            <td>0.719</td>
+            <td>1.389</td>
+        </tr>
+        <tr>
+            <td>PCPNet-Sem.</td>
+            <td>0.704</td>
+            <td>1.360</td>
+        </tr>
+        <tr>
+            <td>ATPPNet</td>
+            <td>0.598</td>
+            <td>0.932</td>
+        </tr>
+        <tr>
+            <td>PCPMamba</td>
+            <td>0.619</td>
+            <td class="best">0.523</td>
+        </tr>
+        <tr>
+            <td><strong>FTRNet</strong></td>
+            <td class="best">0.379</td>
+            <td>0.646</td>
+        </tr>
+    </table>
 
 
     <h2>More Results</h2>
 
-    <div class="placeholder">
-        Additional qualitative / dynamic results will be placed here
-    </div>
+    <p>
+        Additional qualitative results and dynamic LiDAR forecasting visualizations
+        will be added here.
+    </p>
 
+
+    <h2>Citation</h2>
+
+    <p>
+        Citation information will be provided upon publication.
+    </p>
+
+
+    <footer>
+        FTRNet Project Page
+    </footer>
 
 </div>
-
-<footer>
-    FTRNet Project Page
-</footer>
 
 </body>
 
