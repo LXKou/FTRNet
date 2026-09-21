@@ -431,10 +431,21 @@
             on nuScenes. Equivalently, training with CFSR reduces mean CD by about
             10.3% relative to the variant without CFSR.
         </p>
+
         <p>
             CFSR exploits overlapping predictions from adjacent forecast origins
             only during training, using their disagreement for selective refinement.
             The inference pipeline itself remains unchanged.
+        </p>
+
+        <p>
+            CFSR shows a more pronounced improvement on nuScenes than on KITTI.
+            One possible explanation is the sparser range-view representation of
+            nuScenes, where predictions from a single forecast origin contain less
+            dense geometric evidence. In this setting, overlapping predictions from
+            adjacent origins can provide more complementary supervision, making
+            cross-origin disagreement more informative during training. This may
+            partly explain why the benefit of CFSR is larger on nuScenes.
         </p>
     </div>
 
