@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>FTRNet: Exploiting Future Temporal Relationships for Point Cloud Prediction</title>
 
     <style>
@@ -14,7 +13,6 @@
             --light-muted: #888;
             --border: #dddddd;
             --soft-bg: #f7f7f7;
-            --link-bg: #222;
         }
 
         * {
@@ -64,26 +62,6 @@
             margin-bottom: 30px;
         }
 
-        .links {
-            text-align: center;
-            margin-bottom: 45px;
-        }
-
-        .links a {
-            display: inline-block;
-            margin: 5px 6px;
-            padding: 9px 16px;
-            border-radius: 6px;
-            background: var(--link-bg);
-            color: white;
-            text-decoration: none;
-            font-size: 15px;
-        }
-
-        .links a:hover {
-            opacity: 0.86;
-        }
-
         h2 {
             font-size: 28px;
             margin-top: 55px;
@@ -116,6 +94,11 @@
 
         .figure.compact img {
             width: min(100%, 900px);
+            margin: 0 auto;
+        }
+
+        .figure.cfsr-figure img {
+            width: min(100%, 960px);
             margin: 0 auto;
         }
 
@@ -237,11 +220,6 @@
 
     <div class="affiliation">
         College of Computer Science and Technology, Jilin University
-    </div>
-
-    <div class="links">
-        <a href="#">Paper</a>
-        <a href="https://github.com/LXKou/FTRNet">GitHub</a>
     </div>
 
 
@@ -460,7 +438,7 @@
         </p>
     </div>
 
-    <div class="figure compact">
+    <div class="figure cfsr-figure">
         <img src="assets/images/cfsr_range_view_comparison.png"
              alt="Range-View comparison with and without CFSR on nuScenes">
         <div class="caption">
