@@ -5,14 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>FTRNet: Horizon-Specific Range-View LiDAR Forecasting with Cross-Origin Refinement</title>
+    <title>FTRNet: Exploiting Future Temporal Relationships for Point Cloud Prediction</title>
 
     <style>
+        :root {
+            --text: #222;
+            --muted: #666;
+            --light-muted: #888;
+            --border: #dddddd;
+            --soft-bg: #f7f7f7;
+            --link-bg: #222;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: Arial, Helvetica, sans-serif;
             margin: 0;
             background: #ffffff;
-            color: #222;
+            color: var(--text);
         }
 
         .container {
@@ -24,7 +41,7 @@
         h1 {
             text-align: center;
             font-size: 42px;
-            margin-bottom: 10px;
+            margin: 0 0 10px;
         }
 
         .subtitle {
@@ -43,7 +60,7 @@
         .affiliation {
             text-align: center;
             font-size: 15px;
-            color: #666;
+            color: var(--muted);
             margin-bottom: 30px;
         }
 
@@ -57,27 +74,38 @@
             margin: 5px 6px;
             padding: 9px 16px;
             border-radius: 6px;
-            background: #222;
+            background: var(--link-bg);
             color: white;
             text-decoration: none;
             font-size: 15px;
+        }
+
+        .links a:hover {
+            opacity: 0.86;
         }
 
         h2 {
             font-size: 28px;
             margin-top: 55px;
             padding-bottom: 8px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h3 {
+            font-size: 21px;
+            margin-top: 32px;
+            margin-bottom: 12px;
         }
 
         p {
             font-size: 17px;
             line-height: 1.7;
+            margin: 14px 0;
         }
 
         .figure {
             width: 100%;
-            margin: 22px 0 12px;
+            margin: 24px 0 14px;
         }
 
         .figure img {
@@ -86,39 +114,109 @@
             display: block;
         }
 
+        .figure.compact img {
+            width: min(100%, 900px);
+            margin: 0 auto;
+        }
+
         .caption {
             text-align: center;
-            color: #666;
+            color: var(--muted);
             font-size: 14px;
-            margin-top: 8px;
+            line-height: 1.55;
+            margin: 9px auto 0;
+            max-width: 900px;
+        }
+
+        .analysis {
+            background: var(--soft-bg);
+            border-left: 4px solid #333;
+            padding: 14px 18px;
+            margin: 18px 0 8px;
+        }
+
+        .analysis p {
+            margin: 4px 0;
+            font-size: 16px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 18px;
+            margin-bottom: 14px;
             font-size: 15px;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px 12px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--border);
             text-align: center;
         }
 
         th {
             font-weight: 600;
+            background: #fafafa;
         }
 
         .best {
             font-weight: bold;
         }
 
+        .note {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .citation-box {
+            background: var(--soft-bg);
+            padding: 16px 18px;
+            border-radius: 6px;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
         footer {
             text-align: center;
-            color: #888;
+            color: var(--light-muted);
             margin-top: 70px;
             font-size: 14px;
+        }
+
+        @media (max-width: 700px) {
+            .container {
+                padding: 36px 18px 60px;
+            }
+
+            h1 {
+                font-size: 34px;
+            }
+
+            .subtitle {
+                font-size: 19px;
+            }
+
+            h2 {
+                font-size: 24px;
+                margin-top: 42px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th,
+            td {
+                padding: 8px 6px;
+            }
         }
     </style>
 </head>
@@ -130,11 +228,11 @@
     <h1>FTRNet</h1>
 
     <div class="subtitle">
-        Horizon-Specific Range-View LiDAR Forecasting with Cross-Origin Refinement
+        Exploiting Future Temporal Relationships for Point Cloud Prediction
     </div>
 
     <div class="authors">
-        Lanxin Kou, Nan Wang, Junnan Sun， Ying Wang
+        Lanxin Kou, Nan Wang, Ying Wang
     </div>
 
     <div class="affiliation">
@@ -150,19 +248,30 @@
     <h2>Overview</h2>
 
     <p>
-        FTRNet revisits range-view LiDAR point cloud prediction from the perspective
-        of temporal relationships among future predictions. It explicitly constructs
-        horizon-specific future representations and exploits overlapping predictions
-        from adjacent forecast origins for selective refinement.
+        <strong>Point cloud prediction</strong> aims to infer future 3D scene geometry
+        from a sequence of past LiDAR observations, providing foresighted perception
+        for downstream planning and decision making. FTRNet performs multi-step
+        prediction in the range-view representation: given past LiDAR range views,
+        it predicts multiple future range views and validity masks in parallel, which
+        are subsequently back-projected to obtain future point clouds.
     </p>
 
+    <p>
+        FTRNet revisits point cloud prediction from the perspective of temporal
+        relationships among future predictions. It focuses on two complementary
+        relationships: differences among future moments within the same forecast
+        origin, and overlapping predictions of the same future moment across adjacent
+        forecast origins.
+    </p>
 
-    <h2>Qualitative Results</h2>
-
-    <div class="figure">
-        <img src="assets/images/comparison.png" alt="Qualitative comparison">
+    <div class="figure compact">
+        <img src="assets/images/range_demo_scene01.gif"
+             alt="Dynamic five-step Range-View prediction on KITTI Odometry">
         <div class="caption">
-            Qualitative comparison on KITTI Odometry at T+1 and T+5.
+            <strong>Dynamic five-step Range-View prediction on KITTI Odometry.</strong>
+            The animation shows predictions from T+1 to T+5. As the prediction horizon
+            increases, future scene changes become more challenging, while the main
+            geometric structures remain visually coherent across the predicted sequence.
         </div>
     </div>
 
@@ -178,14 +287,41 @@
 
     <p>
         FTRNet first models historical temporal context from past range views.
-        Current geometry is combined with learnable horizon embeddings to construct
-        horizon-conditioned future representations before decoding.
-        CFSR further uses cross-origin overlapping predictions during training
-        for selective refinement.
+        Current geometry is then combined with learnable horizon embeddings to
+        construct horizon-conditioned future representations before decoding.
+        In addition, Cross-Origin Future Scene Refinement (CFSR) exploits overlapping
+        predictions generated from adjacent forecast origins during training and uses
+        their disagreement for selective refinement.
+    </p>
+
+    <p>
+        CFSR is used only during training and introduces no additional refinement
+        stage at inference.
     </p>
 
 
-    <h2>Quantitative Results</h2>
+    <h2>Qualitative Analysis</h2>
+
+    <div class="figure">
+        <img src="assets/images/comparison.png" alt="Qualitative comparison on KITTI Odometry">
+        <div class="caption">
+            <strong>Additional qualitative comparison on KITTI Odometry at T+1 and T+5.</strong>
+        </div>
+    </div>
+
+    <div class="analysis">
+        <p>
+            Compared with ATPPNet, FTRNet preserves scene boundaries and local
+            geometric contours more completely at both prediction horizons.
+            The difference becomes more visible at T+5, where prediction errors
+            accumulate and long-horizon geometry is more difficult to maintain.
+            FTRNet still retains the main geometric structure of the future scene,
+            reducing the structural deviation observed at the longer horizon.
+        </p>
+    </div>
+
+
+    <h2>Quantitative Analysis</h2>
 
     <h3>KITTI Odometry</h3>
 
@@ -221,6 +357,18 @@
             <td class="best">0.255</td>
         </tr>
     </table>
+
+    <div class="analysis">
+        <p>
+            On KITTI Odometry, FTRNet achieves the lowest mean Range Loss and
+            Chamfer Distance among the compared methods. Relative to PCPMamba,
+            the mean Range Loss decreases from 0.615 to 0.567 (about 7.8%),
+            while the mean CD decreases from 0.298 to 0.255 (about 14.4%).
+            The consistent improvements in both metrics indicate that the gain
+            in range-view prediction also translates into improved reconstructed
+            3D geometry on KITTI.
+        </p>
+    </div>
 
 
     <h3>nuScenes</h3>
@@ -258,13 +406,69 @@
         </tr>
     </table>
 
+    <div class="analysis">
+        <p>
+            On nuScenes, FTRNet substantially reduces the mean Range Loss to 0.379,
+            compared with 0.619 for PCPMamba, corresponding to a reduction of about
+            38.8%. However, the two methods exhibit a different trend in Chamfer
+            Distance, where PCPMamba obtains a lower mean CD.
+        </p>
+        <p>
+            This discrepancy highlights that Range Loss and Chamfer Distance capture
+            complementary aspects of point cloud prediction. Range Loss evaluates
+            radial prediction errors in the range-view representation, whereas
+            Chamfer Distance is computed after back-projection and is additionally
+            affected by the spatial distribution and validity of the reconstructed
+            points. Consequently, improved range-view accuracy does not necessarily
+            translate proportionally into lower 3D Chamfer Distance.
+        </p>
+        <p class="note">
+            Because the PCPMamba implementation and predictions are not publicly
+            available, we treat this as a metric-level observation rather than
+            attributing the difference to a specific internal mechanism.
+        </p>
+    </div>
 
-    <h2>More Results</h2>
 
-    <p>
-        Additional qualitative results and dynamic LiDAR forecasting visualizations
-        will be added here.
-    </p>
+    <h2>CFSR Analysis on nuScenes</h2>
+
+    <table>
+        <tr>
+            <th>Variant</th>
+            <th>Mean CD</th>
+        </tr>
+        <tr>
+            <td>w/o CFSR</td>
+            <td>0.720</td>
+        </tr>
+        <tr>
+            <td><strong>FTRNet</strong></td>
+            <td class="best">0.646</td>
+        </tr>
+    </table>
+
+    <div class="analysis">
+        <p>
+            Removing CFSR increases the mean Chamfer Distance from 0.646 to 0.720
+            on nuScenes. Equivalently, training with CFSR reduces mean CD by about
+            10.3% relative to the variant without CFSR.
+        </p>
+        <p>
+            CFSR exploits overlapping predictions from adjacent forecast origins
+            only during training, using their disagreement for selective refinement.
+            The inference pipeline itself remains unchanged.
+        </p>
+    </div>
+
+    <div class="figure compact">
+        <img src="assets/images/cfsr_range_view_comparison.png"
+             alt="Range-View comparison with and without CFSR on nuScenes">
+        <div class="caption">
+            <strong>Qualitative effect of CFSR on nuScenes.</strong>
+            Range-view predictions from models trained without and with CFSR are
+            compared to illustrate how cross-origin refinement affects future prediction.
+        </div>
+    </div>
 
 
     <h2>Citation</h2>
@@ -272,6 +476,12 @@
     <p>
         Citation information will be provided upon publication.
     </p>
+
+    <div class="citation-box">@article{kou2026ftrnet,
+  title   = {FTRNet: Exploiting Future Temporal Relationships for Point Cloud Prediction},
+  author  = {Kou, Lanxin and Wang, Nan and Wang, Ying},
+  year    = {2026}
+}</div>
 
 
     <footer>
